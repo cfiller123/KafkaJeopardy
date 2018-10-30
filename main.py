@@ -8,7 +8,20 @@ app = Flask(__name__)
 # db = SQLAlchemy(app)
 # app.secret_key = 'topsecretkey'
 
+answer = "Jeopardy"
+alphabet = 'abcdefghijklmnopqrstuvwxyz'
+alphabet_remaining = ''
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
+@app.route('/jeopardy', methods=['GET','POST'])
+def game():
+    if request.method == 'POST':
+        guess_letter = request.form['guess_letter']
+        guess_word = request.form['guess_word']
+        if (not guess_letter) and (not guess_word):
+            flash('Please either guess a word or a letter')
+
+    return render_template('jeopardy.html')
