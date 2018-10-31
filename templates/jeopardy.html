@@ -13,6 +13,8 @@
         {% endif %}
     {% endwith %}
     
+    <p>Hi, {{name}}</p>
+
     <p>If you don't know the rules, go <a href="https://en.wikipedia.org/wiki/Jeopardy!">here</a>!</p>
 
     <h3>Current Score = {{current_score}}</h3>
@@ -27,5 +29,8 @@
         </label>
         <input type='submit' value='Guess!' />
     </form>
+
+    <br>
+    <a href='/logout'>Stop playing and logout</a>>
 </body>
 </html>

@@ -2,7 +2,28 @@
 <html lang="en">
     <head><title>Kafka Jeopardy!</title></head>
 <body>
-    <p>Hello.</p>
-    <p>Go <a href="/jeopardy">here</a> to play a game!</p>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+            {% for category,message in messages %}
+                <li class="{{category}}">{{message}}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <p>
+        Welcome to Kafka Jeopardy! To play a game, please enter your name below.
+    </p>
+
+    <form method='post'>
+            <label>
+                What is your name?
+                <input type="text" name='name' value='{{name}}' />
+            </label>
+            <input type='submit' value='Play!' />
+    </form>
+
 </body>
 </html>
