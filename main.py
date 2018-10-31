@@ -1,14 +1,22 @@
 from flask import Flask, request, redirect, render_template, flash, session
 import json
 import random
-# from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# app.config['Debug'] = True
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://put-the-db-login-path-here'
-# app.config['SQLALCHEMY_ECHO'] = True
-# db = SQLAlchemy(app)
+app.config['Debug'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://kafkaJeopardy:password@localhost:8889/kafkajeopardy'
+app.config['SQLALCHEMY_ECHO'] = True
+db = SQLAlchemy(app)
 app.secret_key='topsecretkey'
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120))
+    score = db.Column(db.Integer)
+    def __init__(self, name):
+        self.name = name
+        self.score = 0
 
 @app.before_request
 def require_user():
@@ -21,28 +29,37 @@ def index():
     session['score'] = 0
     if request.method == 'POST':
         name = request.form['name']
+        existing_user = User.query.filter_by(name = name).first()
         if (not name):
             flash('Please enter your name')
+        elif(existing_user):
+            flash('Welcome back!')
+            session['user'] = name
+            return redirect('/jeopardy')
         else:
             session['user'] = name
+            new_user = User(name)
+            db.session.add(new_user)
+            db.session.commit()
             return redirect('/jeopardy')
     return render_template('index.html')
 
 @app.route('/jeopardy', methods=['GET','POST'])
 def game():
-    new_score = session['score']
     if request.method == 'POST':
         answer = request.form['answer']
         if (not answer):
             flash('Please enter something')
         else:
             if (answer == session['answer']):
-                new_score += 1
-                session['score'] = new_score
-                return render_template('jeopardy.html', current_score = session['score'], question = question_selector())
+                current_user = User.query.filter_by(name = session['user']).first()
+                current_user.score = current_user.score + 1
+                db.session.commit()
+                return render_template('jeopardy.html', current_score = current_user.score, question = question_selector())
             else:
                 flash('Incorrect')
-    return render_template('jeopardy.html', current_score = session['score'], question = question_selector(), name = session['user'])
+    current_user = User.query.filter_by(name = session['user']).first()
+    return render_template('jeopardy.html', current_score = current_user.score, question = question_selector(), name = session['user'])
 
 def question_selector():
     with open('JEOPARDY_QUESTIONS1.json') as file:
