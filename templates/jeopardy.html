@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head><title>Let's play a game</title></head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <ul>
+            {% for category,message in messages %}
+                <li class="{{category}}">{{message}}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <p>If you don't know the rules, go <a href="https://en.wikipedia.org/wiki/Jeopardy!">here</a>!</p>
+
+    <h3>Current Score = {{current_score}}</h3>
+
+
+    <form method='post'>
+        <label>
+            Guess a letter:
+            <input type="text" name='guess_letter' value='{{guess_letter}}' />
+        </label>
+        <br>
+        <br>
+        <label>
+            Guess a word:
+            <input type='text' name='guess_word' value='{{guess_word}}' />
+        </label>
+        <input type='submit' value='Guess!' />
+    </form>
+</body>
+</html>
