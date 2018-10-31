@@ -1,4 +1,6 @@
 from flask import Flask, request, redirect, render_template, flash, session
+import json
+import random
 # from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -10,9 +12,7 @@ app.secret_key='topsecretkey'
 
 topics = []
 points = [100, 200, 300, 400, 500]
-correct_answer = '20'
-question = 'Total digits on all my hands and feet'
-
+# correct_answer = '20'
 
 @app.route('/', methods=['GET'])
 def index():
@@ -27,10 +27,18 @@ def game():
         if (not answer):
             flash('Please enter something')
         else:
-            if (answer == correct_answer):
+            if (answer == session['answer']):
                 new_score += 1
                 session['score'] = new_score
                 return render_template('jeopardy.html', current_score = new_score)
             else:
                 flash('Incorrect')
-    return render_template('jeopardy.html', current_score = session['score'], question = question)
+    return render_template('jeopardy.html', current_score = session['score'], question = question_selector())
+
+def question_selector():
+    with open('JEOPARDY_QUESTIONS1.json') as file:
+        data = json.load(file)
+    x = random.randint(1,501)
+    session['answer'] = data[x]['answer']
+    return data[x]['question']
+    
