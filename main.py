@@ -10,7 +10,8 @@ app.secret_key='topsecretkey'
 
 topics = []
 points = [100, 200, 300, 400, 500]
-correct_answer = 'test'
+correct_answer = '20'
+question = 'Total digits on all my hands and feet'
 
 
 @app.route('/', methods=['GET'])
@@ -32,4 +33,4 @@ def game():
                 return render_template('jeopardy.html', current_score = new_score)
             else:
                 flash('Incorrect')
-    return render_template('jeopardy.html', current_score = session['score'])
+    return render_template('jeopardy.html', current_score = session['score'], question = question)
