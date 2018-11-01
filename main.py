@@ -2,6 +2,7 @@ from flask import Flask, request, redirect, render_template, flash, session
 import json
 import random
 from flask_sqlalchemy import SQLAlchemy
+from fuzzywuzzy import fuzz, process
 
 app = Flask(__name__)
 app.config['Debug'] = True
@@ -51,7 +52,7 @@ def game():
         if (not answer):
             flash('Please enter something')
         else:
-            if (answer == session['answer']):
+            if (fuzzy_match(answer,session['answer'],85)):
                 current_user = User.query.filter_by(name = session['user']).first()
                 current_user.score = current_user.score + 1
                 db.session.commit()
@@ -67,6 +68,13 @@ def question_selector():
     x = random.randint(1,501)
     session['answer'] = data[x]['answer']
     return data[x]['question']
+
+def fuzzy_match(guess, answer, acceptable_match):
+    match = fuzz.ratio(guess,answer)
+    if (match>=acceptable_match):
+        return True
+    else:
+        return False
 
 @app.route('/logout')
 def logout():
