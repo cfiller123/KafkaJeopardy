@@ -59,6 +59,9 @@ def game():
                 return render_template('jeopardy.html', current_score = current_user.score, question = question_selector())
             else:
                 flash('Incorrect')
+                current_user = User.query.filter_by(name = session['user']).first()
+                current_user.score = current_user.score - 1
+                db.session.commit()
     current_user = User.query.filter_by(name = session['user']).first()
     return render_template('jeopardy.html', current_score = current_user.score, question = question_selector(), name = session['user'])
 
