@@ -3,7 +3,7 @@ import json
 import random
 from flask_sqlalchemy import SQLAlchemy
 from fuzzywuzzy import fuzz, process
-import kafka
+from kafka import *
 
 # Sets application configurations
 app = Flask(__name__)
@@ -87,28 +87,22 @@ def fuzzy_match(guess, answer, acceptable_match):
     else:
         return False
 
-# Creates messages to push to kafka
-def publish_message(producer_instance, topic_name, key, value):
+# Gets new question from queue
+def get_kafka_question():
+    topic_name = 'Jeopardy'
     try:
-        key_bytes = bytes(key, encoding='utf-8')
-        value_bytes = bytes(value, encoding='utf-8')
-        producer_instance.send(topic_name, key=key_bytes, value=value_bytes)
-        producer_instance.flush()
-        print('Message published successfully.')
-    except Exception as ex:
-        print('Exception in publishing message')
-        print(str(ex))
-
-# Creates instance of kafka producer for pushing new questions
-def connect_kafka_producer():
-    _producer = None
-    try:
-        _producer = KafkaProducer(bootstrap_servers=['localhost:9092'], api_version=(0, 10))
-    except Exception as ex:
-        print('Exception while connecting Kafka')
-        print(str(ex))
+        consumer = KafkaConsumer(topic_name, bootstrap_servers=['localhost:9092'], consumer_timeout_ms=1000, max_poll_records=1)
+        for msg in consumer:
+            return parse_message(msg)
+    except (Exception e):
+        return 'no_new_questions'
     finally:
-        return _producer
+        consumer.close()
+
+# Provides dictionary of kafka message contents
+def parse_message(msg):
+    item = json.loads(msg)
+    return {'question':item['question'], 'answer':item['answer'], 'value':item['value']}
 
 # Logs out so someone else can play with their own score
 @app.route('/logout')
@@ -117,8 +111,4 @@ def logout():
     return redirect('/')
     
 if __name__ == '__main__':
-    # headers = {
-    #     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36',
-    #     'Pragma': 'no-cache'
-    # }
     app.run()
