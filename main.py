@@ -3,7 +3,7 @@ import json
 import random
 from flask_sqlalchemy import SQLAlchemy
 from fuzzywuzzy import fuzz, process
-from kafka import *
+from kafka import TopicPartition, KafkaConsumer
 
 # Sets application configurations
 app = Flask(__name__)
@@ -87,17 +87,16 @@ def fuzzy_match(guess, answer, acceptable_match):
     else:
         return False
 
-# Gets new question from queue
+# Gets most recent uncommitted question from queue by the user's name as group
 def get_kafka_question():
-    topic_name = 'Jeopardy'
-    try:
-        consumer = KafkaConsumer(topic_name, bootstrap_servers=['localhost:9092'], consumer_timeout_ms=1000, max_poll_records=1)
-        for msg in consumer:
-            return parse_message(msg)
-    except (Exception e):
-        return 'no_new_questions'
-    finally:
-        consumer.close()
+    topic = 'Jeopardy'
+    group_id = session['user']
+    servers = ['localhost:9092']
+    consumer = KafkaConsumer(topic, group_id = group_id, bootstrap_servers=servers, auto_offset_reset='earliest', consumer_timeout_ms=3000)
+    for msg in consumer:
+        return parse_message(msg.value)
+        break
+    consumer.close()
 
 # Provides dictionary of kafka message contents
 def parse_message(msg):
