@@ -3,7 +3,7 @@ import json
 import random
 from flask_sqlalchemy import SQLAlchemy
 from fuzzywuzzy import fuzz, process
-from kafka import TopicPartition, KafkaConsumer
+from kafka import TopicPartition, KafkaConsumer, OffsetAndMetadata
 
 # Sets application configurations
 app = Flask(__name__)
@@ -71,14 +71,6 @@ def game():
     current_user = User.query.filter_by(name = session['user']).first()
     return render_template('jeopardy.html', current_score = current_user.score, question = get_kafka_question(), name = session['user'])
 
-# Chooses a question and answer from json file
-# def question_selector():
-#     with open('JEOPARDY_QUESTIONS1.json') as file:
-#         data = json.load(file)
-#     x = random.randint(1,501)
-#     session['answer'] = data[x]['answer']
-#     return data[x]['question']
-
 # Allows for 85% or better match of answer in case of misspelling/capitalization errors by user
 def fuzzy_match(guess, answer, acceptable_match):
     match = fuzz.ratio(guess,answer)
@@ -92,13 +84,23 @@ def get_kafka_question():
     topic = 'Jeopardy'
     group_id = session['user']
     servers = ['localhost:9092']
-    consumer = KafkaConsumer(topic, group_id = group_id, bootstrap_servers=servers, auto_offset_reset='earliest', consumer_timeout_ms=3000)
+    partition = 0
+    consumer = KafkaConsumer(topic, group_id = group_id, bootstrap_servers=servers, auto_offset_reset='earliest', consumer_timeout_ms=1000, max_poll_records=1, enable_auto_commit=False)
     for msg in consumer:
-        temp = parse_message(msg.value)
+        meta = consumer.partitions_for_topic(msg.topic)
+        partition_temp = TopicPartition(msg.topic,msg.partition)
+        offsets = OffsetAndMetadata(msg.offset+1, meta)
+        options = {partition_temp: offsets}
+        temp = parse_message(msg.value)        
         session['answer'] = temp['answer']
-        return temp['question']
+        question = temp['question']
+        consumer.commit(offsets=options)
         break
-    consumer.close()
+    consumer.close(autocommit=False)
+    try:
+        return question
+    except:
+        return 'No new questions :('
 
 # Provides dictionary of kafka message contents
 def parse_message(msg):
