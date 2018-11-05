@@ -1,3 +1,6 @@
-# Jeopardy in the cloud!
+# Kafka Jeopardy
 #
-## This game contains all jeopardy questions (up till ~2016). You can log in and it will persist your score in a mySQL database.
+## Kafka Jeopardy is a web-based Jeopardy-style game that uses historical Jepoardy questions.
+###
+## Built With
+### Python, Flask, MySQL, PostgreSQL, Apache Kafka
