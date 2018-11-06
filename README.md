@@ -1,8 +1,8 @@
 # Kafka Jeopardy
 
-###### Kafka Jeopardy is a web-based Jeopardy-style game that uses historical Jepoardy questions.
+Kafka Jeopardy is a web-based Jeopardy-style game that uses historical Jeopardy questions.
 
-###### Built With
+### Built With
 Python, Flask, MySQL, PostgreSQL, Apache Kafka
 
 MIT License
