@@ -60,16 +60,22 @@ def game():
         else:
             if (fuzzy_match(answer,session['answer'],85)):
                 current_user = User.query.filter_by(name = session['user']).first()
-                current_user.score = current_user.score + 1
+                jeopardy_info = get_kafka_question()
+                value = jeopardy_info[1]
+                current_user.score = current_user.score + int(value[1:])
                 db.session.commit()
-                return render_template('jeopardy.html', current_score = current_user.score, question = get_kafka_question(), name = session['user'])
+                question = jeopardy_info[0]
+                return render_template('jeopardy.html', current_score = current_user.score, question = question[1:-1], name = session['user'])
             else:
                 flash('Incorrect')
                 current_user = User.query.filter_by(name = session['user']).first()
                 current_user.score = current_user.score - 1
                 db.session.commit()
     current_user = User.query.filter_by(name = session['user']).first()
-    return render_template('jeopardy.html', current_score = current_user.score, question = get_kafka_question(), name = session['user'])
+    jeopardy_info = get_kafka_question()
+    value = jeopardy_info[1]
+    question = jeopardy_info[0]
+    return render_template('jeopardy.html', current_score = current_user.score, question = question[1:-1], name = session['user'])
 
 # Allows for 85% or better match of answer in case of misspelling/capitalization errors by user
 def fuzzy_match(guess, answer, acceptable_match):
@@ -94,11 +100,12 @@ def get_kafka_question():
         temp = parse_message(msg.value)        
         session['answer'] = temp['answer']
         question = temp['question']
+        value = temp['value']
         consumer.commit(offsets=options)
         break
     consumer.close(autocommit=False)
     try:
-        return question
+        return question,value
     except:
         return 'No new questions :('
 
