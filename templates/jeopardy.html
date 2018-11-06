@@ -1,8 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head><title>Let's play a game</title></head>
-<body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="kafkajeopardy">
+        <meta name="author" content="carlfiller">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <title>Kafka Jeopardy!</title></head>
 
+    <body class="text-center">
+    <br><br><br>
+    <p class='h3'>Hi, {{name}}. If you don't know the rules, go <a href="https://en.wikipedia.org/wiki/Jeopardy!">here</a>!</p>
+    <br>
+    <p class='h6'>Current Score = {{current_score}}</p>
+    <br>
+    <p class='h4'>{{question}}</p>
+    <br><br>
+    <form method='post'>
+        <label>
+            Guess the answer:
+            <input type="text" name='answer' value='{{answer}}' />
+        </label>
+        <input type='submit' value='Guess!' />
+    </form>
     {% with messages = get_flashed_messages(with_categories=True) %}
         {% if messages %}
             <ul>
@@ -12,25 +33,12 @@
             </ul>
         {% endif %}
     {% endwith %}
-    
-    <p>Hi, {{name}}</p>
-
-    <p>If you don't know the rules, go <a href="https://en.wikipedia.org/wiki/Jeopardy!">here</a>!</p>
-
-    <h3>Current Score = {{current_score}}</h3>
-
-    <br><br>
-    <p>{{question}}</p>
-
-    <form method='post'>
-        <label>
-            Guess the answer:
-            <input type="text" name='answer' value='{{answer}}' />
-        </label>
-        <input type='submit' value='Guess!' />
-    </form>
 
     <br>
     <a href='/logout'>Stop playing and logout</a>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

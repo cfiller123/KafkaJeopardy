@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head><title>Kafka Jeopardy!</title></head>
-<body>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="kafkajeopardy">
+        <meta name="author" content="carlfiller">
 
-    {% with messages = get_flashed_messages(with_categories=True) %}
-        {% if messages %}
-            <ul>
-            {% for category,message in messages %}
-                <li class="{{category}}">{{message}}</li>
-            {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
-    <p>
-        Welcome to Kafka Jeopardy! To play a game, please enter your name below.
-    </p>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <link href="/static/signin.css" rel="stylesheet">
+        <title>Kafka Jeopardy!</title>
+    </head>
+<br>
+<body class="container">
+        <p class="h1">
+                Welcome to Kafka Jeopardy!
+        </p>
+        
+            <form method='post' class="form-signin">
+                    <label for="name" class="sr-only">Name:</label>
+                    <input type="text" id="name" class="form-control" placeholder="Name" name='name' value='{{name}}' required autofocus>
+                <button class="btn btn-lg btn-primary btn-block" type="Submit">Play!</button>
+            </form>
 
-    <form method='post'>
-            <label>
-                What is your name?
-                <input type="text" name='name' value='{{name}}' />
-            </label>
-            <input type='submit' value='Play!' />
-    </form>
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            {% if messages %}
+                <ul>
+                {% for category,message in messages %}
+                    <li class="{{category}}">{{message}}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 </body>
 </html>

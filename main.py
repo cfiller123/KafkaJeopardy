@@ -27,7 +27,7 @@ class User(db.Model):
 def require_user():
     allowed_routes = ['index']
     if request.endpoint not in allowed_routes and 'user' not in session:
-        return redirect('/')
+        return redirect('/') 
 
 # Landing page where you "login" by entering your name
 @app.route('/', methods=['GET', 'POST'])
